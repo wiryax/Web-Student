@@ -21,12 +21,8 @@ class Guru extends BaseController
             $this->session->setFlashdata('data', 'anda tidak memiliki akses');
             return redirect()->to('Home/');
         } else {
-            $model = db_connect();
-            $builder = $model->table('guru');
-            $builder->select('Nama');
-            $builder->where('NIP', $this->NIP);
-            $get = $builder->get();
-            $data = ['Nama' => $get->getResult()];
+            $model = new guruModel();
+            $data = ['dataGuru' => $model->GuruHome($this->NIP)['dataGuru']->get()->getResultArray(), 'dataJumlahTugas' => $model->GuruHome($this->NIP)['dataJumlahTugas']->get()->getNumRows(), 'dataJumlahKelas' => $model->GuruHome($this->NIP)['dataJumlahKelas']->get()->getNumRows()];
             return view('Guru/DashboardGuru', $data);
         }
     }
@@ -66,7 +62,6 @@ class Guru extends BaseController
     }
     public function saveTugas()
     {
-
         $model = new guruModel();
         $validation = \Config\Services::validation();
         $dataFile = $this->request->getFile('file');
@@ -74,7 +69,6 @@ class Guru extends BaseController
         $start = date_create($dataReq['tgl_upload']);
         $end = date_create($dataReq['tgl_deadline']);
         $dateVal = (int)date_diff($start, $end)->format("%R%a");
-        // dd($dataReq['id_mapel']);
         if (!$this->LogValidation() == true) {
             return redirect()->to('Home/');
         }
@@ -114,13 +108,8 @@ class Guru extends BaseController
         if (!$this->LogValidation() == true) {
             return redirect()->to('Home/');
         }
-        // $result = $model->select()->where('NIS',$NIS)->where('id_mapel',$id_mapel);
-        // dd($result->get()->getResultArray());
-        $data = ['NIS' => $NIS, 'id_mapel' => $id_mapel, 'dataValue' => $model->select('UAS,UTS,Tugas')->where('NIS', $NIS)->where('id_mapel', $id_mapel)->get()->getResult()];
+        $data = ['NIS' => $NIS, 'id_mapel' => $id_mapel, 'dataValue' => $model->getDataNIlai($NIS, $id_mapel)->get()->getResult()];
         return view("Guru/inputNilaiSiswa", $data);
-        // $data = ['siswa'=>$db->query("SELECT siswa.NIS, siswa.Nama, mapel.id_mapel FROM siswa,mapel WHERE (siswa.id_kelas = '$id_kelas' AND mapel.id_mapel = '$id_mapel')")->getResult(),'tabel' => $kategoriNilai];
-        // return view('Guru/formInputNilai',$data);
-
     }
     public function saveNilai()
     {

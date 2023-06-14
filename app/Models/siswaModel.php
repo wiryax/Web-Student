@@ -16,11 +16,6 @@ class siswaModel extends Model
         $db = $this->db;
 
         $query = $db->query("SELECT mapel.nama_mapel, kelas.id_kelas, guru.Nama, mapel.id_mapel FROM siswa JOIN kelas ON kelas.id_kelas = siswa.id_kelas JOIN mapel ON mapel.id_kelas = kelas.id_kelas JOIN guru ON mapel.NIP = guru.NIP WHERE siswa.NIS = $NIS");
-
-        // $this->from('siswa');
-        // $this->join('kelas','kelas.id_kelas = siswa.id_kelas');
-        // $this->join('mapel','mapel.id_kelas = mapel.id_kelas');
-        // $query = $this->get();
         return $query->getResult();
     }
     public function getNilai($NIS)

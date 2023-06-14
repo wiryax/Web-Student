@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\LoginModel;
-
+use CodeIgniter\Validation\StrictRules\Rules;
 
 class Home extends BaseController
 {
@@ -14,13 +14,37 @@ class Home extends BaseController
 
     public function index()
     {
-        return view('Login-template/Login');
+        session();
+        $data = [
+            'validation' => \Config\Services::validation()
+        ];
+        return view('Login-template/Login', $data);
     }
     public function Validation()
     {
         $data = $this->request->getVar();
         $dataModel = new LoginModel();
         $cekLogin = $dataModel->cek($data['username'], $data['password']);
+
+
+        if (!$this->validate([
+            'username' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} Harus Diisi !!!',
+                ]
+            ],
+            'password' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} Harus Diisi !!!',
+                ]
+            ]
+        ])) {
+            $validation = \Config\Services::validation();
+            return redirect()->to('/Home')->withInput()->with('validation', $validation);
+        }
+
         if ($cekLogin === 'siswa') {
             $this->session->set([
                 'statusLogin' => true,
@@ -35,7 +59,7 @@ class Home extends BaseController
             ]);
             return redirect()->to('/Guru/');
         } else {
-            return redirect()->back();
+            return redirect()->to('/Home/');
         }
     }
     function dashboard()

@@ -18,8 +18,6 @@ class LoginModel extends Model
         }
         else if($dataGuru->countAllResults() >= 1){
             return 'guru';
-        }else{
-            return false;
         }
     }
 }
